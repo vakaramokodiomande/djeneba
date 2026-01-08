@@ -1,0 +1,56 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="fieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="700" fill="url(#skyGrad)"/>
+
+  <!-- Field -->
+  <rect y="700" width="1920" height="380" fill="url(#fieldGrad)"/>
+
+  <!-- Cotton plants pattern -->
+  <g opacity="0.3">
+    <!-- Row 1 -->
+    <circle cx="200" cy="800" r="40" fill="white"/>
+    <circle cx="400" cy="820" r="35" fill="white"/>
+    <circle cx="600" cy="800" r="40" fill="white"/>
+    <circle cx="800" cy="810" r="38" fill="white"/>
+    <circle cx="1000" cy="800" r="40" fill="white"/>
+    <circle cx="1200" cy="820" r="35" fill="white"/>
+    <circle cx="1400" cy="800" r="40" fill="white"/>
+    <circle cx="1600" cy="810" r="38" fill="white"/>
+    <circle cx="1800" cy="800" r="40" fill="white"/>
+
+    <!-- Row 2 -->
+    <circle cx="300" cy="900" r="35" fill="white"/>
+    <circle cx="500" cy="920" r="40" fill="white"/>
+    <circle cx="700" cy="900" r="35" fill="white"/>
+    <circle cx="900" cy="910" r="38" fill="white"/>
+    <circle cx="1100" cy="900" r="40" fill="white"/>
+    <circle cx="1300" cy="920" r="35" fill="white"/>
+    <circle cx="1500" cy="900" r="40" fill="white"/>
+    <circle cx="1700" cy="910" r="38" fill="white"/>
+
+    <!-- Row 3 -->
+    <circle cx="200" cy="1000" r="38" fill="white"/>
+    <circle cx="400" cy="1020" r="40" fill="white"/>
+    <circle cx="600" cy="1000" r="35" fill="white"/>
+    <circle cx="800" cy="1010" r="40" fill="white"/>
+    <circle cx="1000" cy="1000" r="38" fill="white"/>
+    <circle cx="1200" cy="1020" r="40" fill="white"/>
+    <circle cx="1400" cy="1000" r="35" fill="white"/>
+    <circle cx="1600" cy="1010" r="40" fill="white"/>
+    <circle cx="1800" cy="1000" r="38" fill="white"/>
+  </g>
+
+  <!-- Sun -->
+  <circle cx="1600" cy="200" r="80" fill="#FFD700" opacity="0.8"/>
+</svg>
