@@ -7,13 +7,14 @@ import BuyerRequest from "@/models/BuyerRequest";
 // GET /api/buyer-requests/[id] - Récupérer une demande spécifique
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await getServerSession(authOptions);
 
         // Vérifier que l'utilisateur est admin
-        if (!session || session.user.role !== "admin") {
+        if (!session || (session.user as any).role !== "admin") {
             return NextResponse.json(
                 { error: "Accès non autorisé" },
                 { status: 403 }
@@ -22,7 +23,7 @@ export async function GET(
 
         await dbConnect();
 
-        const request = await BuyerRequest.findById(params.id);
+        const request = await BuyerRequest.findById(id);
 
         if (!request) {
             return NextResponse.json(
@@ -47,13 +48,14 @@ export async function GET(
 // PATCH /api/buyer-requests/[id] - Mettre à jour le statut d'une demande (admin)
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await getServerSession(authOptions);
 
         // Vérifier que l'utilisateur est admin
-        if (!session || session.user.role !== "admin") {
+        if (!session || (session.user as any).role !== "admin") {
             return NextResponse.json(
                 { error: "Accès non autorisé. Seuls les administrateurs peuvent modifier les demandes." },
                 { status: 403 }
@@ -76,7 +78,7 @@ export async function PATCH(
 
         // Mettre à jour la demande
         const updatedRequest = await BuyerRequest.findByIdAndUpdate(
-            params.id,
+            id,
             { status, adminNotes },
             { new: true, runValidators: true }
         );
@@ -105,13 +107,14 @@ export async function PATCH(
 // DELETE /api/buyer-requests/[id] - Supprimer une demande (admin)
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const session = await getServerSession(authOptions);
 
         // Vérifier que l'utilisateur est admin
-        if (!session || session.user.role !== "admin") {
+        if (!session || (session.user as any).role !== "admin") {
             return NextResponse.json(
                 { error: "Accès non autorisé" },
                 { status: 403 }
@@ -120,7 +123,7 @@ export async function DELETE(
 
         await dbConnect();
 
-        const deletedRequest = await BuyerRequest.findByIdAndDelete(params.id);
+        const deletedRequest = await BuyerRequest.findByIdAndDelete(id);
 
         if (!deletedRequest) {
             return NextResponse.json(

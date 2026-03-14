@@ -18,6 +18,7 @@ export interface IListing extends Document {
   status: "active" | "pending" | "sold" | "rejected";
   createdAt: Date;
   updatedAt: Date;
+  [key: string]: any;
 }
 
 const ListingSchema = new Schema<IListing>(

@@ -10,6 +10,8 @@ export interface IUser extends Document {
   location?: string;
   avatar?: string;
   companyName?: string; // Pour les transformateurs
+  vehicleType?: string;
+  [key: string]: any;
 
   createdAt: Date;
   updatedAt: Date;

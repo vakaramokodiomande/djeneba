@@ -8,9 +8,10 @@ import User from "@/models/User";
 // PATCH /api/orders/[id]/assign-transporter
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -31,7 +32,7 @@ export async function PATCH(
     const { transporterId, transportPrice, estimatedDeliveryDate } = validated;
 
     // Récupérer la commande
-    const order = await Order.findById(params.id);
+    const order = await Order.findById(id);
 
     if (!order) {
       return NextResponse.json(
@@ -41,9 +42,9 @@ export async function PATCH(
     }
 
     // Vérifier que l'utilisateur est l'acheteur ou le vendeur de la commande
-    const isBuyer = session.user.id === order.buyer.toString();
-    const isSeller = session.user.id === order.seller.toString();
-    const isAdmin = session.user.role === "admin";
+    const isBuyer = (session.user as any).id === order.buyer?.toString();
+    const isSeller = (session.user as any).id === order.seller?.toString();
+    const isAdmin = (session.user as any).role === "admin";
 
     if (!isBuyer && !isSeller && !isAdmin) {
       return NextResponse.json(
@@ -58,7 +59,7 @@ export async function PATCH(
 
     try {
       const updatedOrder = await assignTransporterService(
-        { id: session.user.id as string, role: session.user.role as string },
+        { id: (session.user as any).id as string, role: (session.user as any).role as string },
         order._id.toString(),
         { transporterId, transportPrice, estimatedDeliveryDate }
       );
@@ -75,7 +76,7 @@ export async function PATCH(
     }
 
     // Peupler les données pour la réponse
-    const updatedOrder = await Order.findById(order._id)
+    const finalOrder = await Order.findById(order?._id)
       .populate("listing")
       .populate("buyer", "-password")
       .populate("seller", "-password")
@@ -83,7 +84,7 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      order: updatedOrder,
+      order: finalOrder,
       message: transporterId
         ? "Transporteur assigné avec succès"
         : "Transporteur retiré avec succès",

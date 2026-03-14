@@ -5,6 +5,9 @@ export interface IOrder extends Document {
   listing: mongoose.Types.ObjectId | string;
   buyer: mongoose.Types.ObjectId | string;
   seller: mongoose.Types.ObjectId | string;
+  transporter?: mongoose.Types.ObjectId | string; // Transporteur assigné
+  transportPrice?: number; // Prix du transport négocié
+  estimatedDeliveryDate?: Date; // Date de livraison estimée
   logisticsPartner?: string; // Partenaire logistique externe assigné par l'admin
   logisticsStatus?: "pending" | "picked_up" | "in_transit" | "delivered";
   proofOfDelivery?: string; // Note ou lien de la preuve de livraison

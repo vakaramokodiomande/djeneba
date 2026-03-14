@@ -6,12 +6,13 @@ import Listing from "@/models/Listing";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user as any).role !== "admin") {
       return NextResponse.json(
         { error: "Non autorisé" },
         { status: 401 }
@@ -31,7 +32,7 @@ export async function PATCH(
     await connectDB();
 
     const listing = await Listing.findByIdAndUpdate(
-      params.id,
+      id,
       { status },
       { new: true }
     );
@@ -55,12 +56,13 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user as any).role !== "admin") {
       return NextResponse.json(
         { error: "Non autorisé" },
         { status: 401 }
@@ -69,7 +71,7 @@ export async function DELETE(
 
     await connectDB();
 
-    const listing = await Listing.findByIdAndDelete(params.id);
+    const listing = await Listing.findByIdAndDelete(id);
 
     if (!listing) {
       return NextResponse.json(

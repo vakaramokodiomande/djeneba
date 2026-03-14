@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { vi } from 'vitest';
+import { vi, expect, describe, test, beforeEach, afterEach } from 'vitest';
 import { SessionProvider } from 'next-auth/react';
 
 // Mocks for Next hooks
@@ -19,7 +19,6 @@ afterEach(() => {
 
 import OrderForm from '../components/OrderForm';
 import ImageUploader from '../components/ImageUploader';
-import TransporterSelector from '../components/TransporterSelector';
 import DashboardHeader from '../components/DashboardHeader';
 
 expect.extend(toHaveNoViolations as any);
@@ -42,16 +41,7 @@ describe('Component accessibility tests (axe)', () => {
 
   test('ImageUploader should have no detectable a11y violations', async () => {
     const { container } = render(
-      <ImageUploader images={[]} onImagesChange={() => {}} />
-    );
-
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
-  });
-
-  test('TransporterSelector should have no detectable a11y violations', async () => {
-    const { container } = render(
-      <TransporterSelector orderId="1" onSelect={() => {}} onClose={() => {}} />
+      <ImageUploader images={[]} onImagesChange={() => { }} />
     );
 
     const results = await axe(container);

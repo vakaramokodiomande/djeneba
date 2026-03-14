@@ -15,15 +15,15 @@ export async function assignTransporterService(sessionUser: { id: string; role: 
 
   if (!order) throw new Error("Commande non trouvée");
 
-  const isBuyer = sessionUser.id === order.buyer.toString();
-  const isSeller = sessionUser.id === order.seller.toString();
+  const isBuyer = sessionUser.id === order.buyer?.toString();
+  const isSeller = sessionUser.id === order.seller?.toString();
   const isAdmin = sessionUser.role === "admin";
 
   if (!isBuyer && !isSeller && !isAdmin) throw new Error("Non autorisé à modifier cette commande");
 
   if (transporterId) {
     // Idempotence: si le même transporteur est déjà assigné, ne rien faire
-    if (order.transporter?.toString() === transporterId) {
+    if (order.transporter && order.transporter.toString() === transporterId) {
       return order;
     }
 
@@ -36,9 +36,9 @@ export async function assignTransporterService(sessionUser: { id: string; role: 
   } else {
     // Retirer le transporteur
     if (!order.transporter) return order;
-    order.transporter = undefined as any;
-    order.transportPrice = undefined as any;
-    order.estimatedDeliveryDate = undefined as any;
+    order.transporter = undefined;
+    order.transportPrice = undefined;
+    order.estimatedDeliveryDate = undefined;
   }
 
   await order.save();

@@ -6,12 +6,13 @@ import User from "@/models/User";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.role !== "admin") {
+    if (!session || (session.user as any).role !== "admin") {
       return NextResponse.json(
         { error: "Non autorisé" },
         { status: 401 }
@@ -20,7 +21,7 @@ export async function DELETE(
 
     await connectDB();
 
-    const user = await User.findById(params.id);
+    const user = await User.findById(id);
 
     if (!user) {
       return NextResponse.json(
@@ -37,7 +38,7 @@ export async function DELETE(
       );
     }
 
-    await User.findByIdAndDelete(params.id);
+    await User.findByIdAndDelete(id);
 
     return NextResponse.json({ message: "Utilisateur supprimé avec succès" });
   } catch (error) {

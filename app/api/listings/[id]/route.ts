@@ -11,11 +11,12 @@ interface RouteParams {
 }
 
 // GET - Récupérer une annonce spécifique
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     await connectDB();
 
-    const listing = await Listing.findById(params.id).populate(
+    const listing = await Listing.findById(id).populate(
       "producer",
       "name location phone email"
     );
@@ -38,8 +39,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // PUT - Mettre à jour une annonce
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -51,7 +53,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     await connectDB();
 
-    const listing = await Listing.findById(params.id);
+    const listing = await Listing.findById(id);
 
     if (!listing) {
       return NextResponse.json(
@@ -62,8 +64,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
     // Vérifier que l'utilisateur est le propriétaire ou un admin
     if (
-      listing.producer.toString() !== session.user.id &&
-      session.user.role !== "admin"
+      listing.producer.toString() !== (session.user as any).id &&
+      (session.user as any).role !== "admin"
     ) {
       return NextResponse.json(
         { error: "Non autorisé" },
@@ -101,8 +103,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 // DELETE - Supprimer une annonce
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -114,7 +117,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     await connectDB();
 
-    const listing = await Listing.findById(params.id);
+    const listing = await Listing.findById(id);
 
     if (!listing) {
       return NextResponse.json(
@@ -125,8 +128,8 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     // Vérifier que l'utilisateur est le propriétaire ou un admin
     if (
-      listing.producer.toString() !== session.user.id &&
-      session.user.role !== "admin"
+      listing.producer.toString() !== (session.user as any).id &&
+      (session.user as any).role !== "admin"
     ) {
       return NextResponse.json(
         { error: "Non autorisé" },
@@ -134,7 +137,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    await Listing.findByIdAndDelete(params.id);
+    await Listing.findByIdAndDelete(id);
 
     return NextResponse.json(
       { message: "Annonce supprimée avec succès" },

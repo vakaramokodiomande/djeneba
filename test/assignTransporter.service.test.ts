@@ -14,7 +14,7 @@ describe("assignTransporterService", () => {
   test("is idempotent when assigning same transporter", async () => {
     const order: any = {
       _id: "order1",
-      transporter: "t1",
+      transporter: { toString: () => "t1" },
       buyer: "b1",
       seller: "s1",
       save: vi.fn().mockResolvedValue(undefined),
