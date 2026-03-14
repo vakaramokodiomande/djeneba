@@ -11,7 +11,6 @@ export default function DashboardHeader() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
             <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
           </Link>
 
@@ -23,7 +22,7 @@ export default function DashboardHeader() {
               <div className="text-xs text-gray-500">
                 {session?.user?.role === "admin" && <><span aria-hidden="true">👑</span> Administrateur</>}
                 {session?.user?.role === "producteur" && <><span aria-hidden="true">🌳</span> Producteur</>}
-                {session?.user?.role === "acheteur" && <><span aria-hidden="true">🏭</span> Transformateur</>}
+                {session?.user?.role === "acheteur" && <><span aria-hidden="true">🏭</span> Acheteur</>}
                 {session?.user?.role === "transporteur" && <><span aria-hidden="true">🚛</span> Transporteur</>}
               </div>
             </div>

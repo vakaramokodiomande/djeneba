@@ -132,7 +132,6 @@ export default function ListingDetailPage() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
               <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
             </Link>
             <Link
@@ -196,9 +195,6 @@ export default function ListingDetailPage() {
               <h3 className="font-semibold mb-2">Producteur</h3>
               <p className="text-gray-700">🌿 {listing.producer.name}</p>
               <p className="text-gray-600 text-sm">📍 {listing.producer.location}</p>
-              {listing.producer.phone && (
-                <p className="text-gray-600 text-sm">📱 {listing.producer.phone}</p>
-              )}
             </div>
 
             {/* Formulaire de commande pour acheteurs */}

@@ -17,15 +17,6 @@ export default function InscriptionPage() {
     role: typeFromUrl || "acheteur",
     phone: "",
     location: "",
-    // Champs spécifiques aux transporteurs
-    companyName: "",
-    vehicleType: "",
-    vehicleCapacity: "",
-    vehiclePlate: "",
-    coverageZones: "",
-    pricePerKm: "",
-    pricePerTon: "",
-    basePrice: "",
   });
 
   const [error, setError] = useState("");
@@ -66,27 +57,6 @@ export default function InscriptionPage() {
         location: formData.location,
       };
 
-      // Ajouter les champs spécifiques aux transporteurs
-      if (formData.role === "transporteur") {
-        dataToSend.companyName = formData.companyName;
-        dataToSend.vehicleType = formData.vehicleType;
-        dataToSend.vehicleCapacity = parseFloat(formData.vehicleCapacity);
-        dataToSend.vehiclePlate = formData.vehiclePlate;
-        dataToSend.coverageZones = formData.coverageZones
-          .split(",")
-          .map((zone) => zone.trim())
-          .filter((zone) => zone.length > 0);
-        if (formData.basePrice) {
-          dataToSend.basePrice = parseFloat(formData.basePrice);
-        }
-        if (formData.pricePerKm) {
-          dataToSend.pricePerKm = parseFloat(formData.pricePerKm);
-        }
-        if (formData.pricePerTon) {
-          dataToSend.pricePerTon = parseFloat(formData.pricePerTon);
-        }
-      }
-
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -115,7 +85,6 @@ export default function InscriptionPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link href="/" className="flex items-center justify-center space-x-2 mb-6">
-            <img src="/logo.svg" alt="DJENEBA Logo" className="h-14 w-14 object-contain" />
             <h1 className="text-3xl font-bold text-tomato-600">DJENEBA</h1>
           </Link>
           <h2 className="text-center text-3xl font-extrabold text-gray-900">
@@ -152,148 +121,10 @@ export default function InscriptionPage() {
                 required
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
               >
-                <option value="acheteur">🛒 Transformateur</option>
+                <option value="acheteur">🛒 Acheteur</option>
                 <option value="producteur">🌿 Producteur</option>
-                <option value="transporteur">🚛 Transporteur</option>
               </select>
             </div>
-
-            {/* Champs spécifiques aux transporteurs */}
-            {formData.role === "transporteur" && (
-              <>
-                <div>
-                  <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
-                    Nom de l'entreprise *
-                  </label>
-                  <input
-                    id="companyName"
-                    name="companyName"
-                    type="text"
-                    required
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    placeholder="Ex: Transport Kaba"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="vehicleType" className="block text-sm font-medium text-gray-700">
-                    Type de véhicule *
-                  </label>
-                  <select
-                    id="vehicleType"
-                    name="vehicleType"
-                    value={formData.vehicleType}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                  >
-                    <option value="">Sélectionnez un type</option>
-                    <option value="camion_leger">Camion léger (jusqu'à 3.5 tonnes)</option>
-                    <option value="camion_moyen">Camion moyen (3.5 - 12 tonnes)</option>
-                    <option value="camion_lourd">Camion lourd (12 - 26 tonnes)</option>
-                    <option value="semi_remorque">Semi-remorque (plus de 26 tonnes)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="vehicleCapacity" className="block text-sm font-medium text-gray-700">
-                    Capacité du véhicule (tonnes) *
-                  </label>
-                  <input
-                    id="vehicleCapacity"
-                    name="vehicleCapacity"
-                    type="number"
-                    step="0.1"
-                    required
-                    value={formData.vehicleCapacity}
-                    onChange={handleChange}
-                    placeholder="Ex: 5"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="vehiclePlate" className="block text-sm font-medium text-gray-700">
-                    Plaque d'immatriculation *
-                  </label>
-                  <input
-                    id="vehiclePlate"
-                    name="vehiclePlate"
-                    type="text"
-                    required
-                    value={formData.vehiclePlate}
-                    onChange={handleChange}
-                    placeholder="Ex: ML-1234-AB"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="coverageZones" className="block text-sm font-medium text-gray-700">
-                    Zones de couverture (séparées par des virgules) *
-                  </label>
-                  <input
-                    id="coverageZones"
-                    name="coverageZones"
-                    type="text"
-                    required
-                    value={formData.coverageZones}
-                    onChange={handleChange}
-                    placeholder="Ex: Bamako, Sikasso, Koulikoro"
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label htmlFor="basePrice" className="block text-sm font-medium text-gray-700">
-                      Prix de base (FCFA)
-                    </label>
-                    <input
-                      id="basePrice"
-                      name="basePrice"
-                      type="number"
-                      value={formData.basePrice}
-                      onChange={handleChange}
-                      placeholder="Ex: 50000"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="pricePerKm" className="block text-sm font-medium text-gray-700">
-                      Prix/km (FCFA)
-                    </label>
-                    <input
-                      id="pricePerKm"
-                      name="pricePerKm"
-                      type="number"
-                      value={formData.pricePerKm}
-                      onChange={handleChange}
-                      placeholder="Ex: 500"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="pricePerTon" className="block text-sm font-medium text-gray-700">
-                      Prix/tonne (FCFA)
-                    </label>
-                    <input
-                      id="pricePerTon"
-                      name="pricePerTon"
-                      type="number"
-                      value={formData.pricePerTon}
-                      onChange={handleChange}
-                      placeholder="Ex: 10000"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
 
 
             <div>
@@ -326,35 +157,40 @@ export default function InscriptionPage() {
               />
             </div>
 
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Téléphone
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="+223 XX XX XX XX"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-              />
-            </div>
+            {/* Champs de contact uniquement pour acheteurs et admin */}
+            {formData.role !== "producteur" && (
+              <>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                    Téléphone
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+223 XX XX XX XX"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
+                  />
+                </div>
 
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                Localisation
-              </label>
-              <input
-                id="location"
-                name="location"
-                type="text"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Ex: Bamako, Mali"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
-              />
-            </div>
+                <div>
+                  <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                    Localisation
+                  </label>
+                  <input
+                    id="location"
+                    name="location"
+                    type="text"
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder="Ex: Bamako, Mali"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
+                  />
+                </div>
+              </>
+            )}
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">

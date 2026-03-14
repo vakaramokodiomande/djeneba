@@ -7,6 +7,10 @@ import { z } from "zod";
 
 const listingSchema = z.object({
   title: z.string().min(5, "Le titre doit contenir au moins 5 caractères"),
+  category: z.enum(["Fruits", "Maraîchers et Vivriers", "Produits de Rente", "Autre"], {
+    errorMap: () => ({ message: "Catégorie invalide" }),
+  }),
+  productName: z.string().min(2, "Le nom du produit est requis"),
   description: z.string().min(20, "La description doit contenir au moins 20 caractères"),
   price: z.number().positive("Le prix doit être positif"),
   quantity: z.number().positive("La quantité doit être positive"),
@@ -25,9 +29,14 @@ export async function GET(request: Request) {
     const maxPrice = searchParams.get("maxPrice");
     const minQuantity = searchParams.get("minQuantity");
     const status = searchParams.get("status");
+    const category = searchParams.get("category");
 
     // Construire le filtre
     const filter: any = {};
+
+    if (category) {
+      filter.category = category;
+    }
 
     if (status) {
       filter.status = status;

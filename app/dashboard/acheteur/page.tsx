@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DashboardHeader from "@/components/DashboardHeader";
-import TransporterSelector from "@/components/TransporterSelector";
 
 interface Order {
   _id: string;
@@ -23,14 +22,6 @@ interface Order {
     phone?: string;
     location?: string;
   };
-  transporter?: {
-    _id: string;
-    name: string;
-    companyName?: string;
-    phone?: string;
-  };
-  transportPrice?: number;
-  estimatedDeliveryDate?: string;
   quantity: number;
   pricePerUnit: number;
   totalAmount: number;
@@ -53,8 +44,6 @@ export default function AcheteurDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderFilter, setOrderFilter] = useState<string>("all");
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [showTransporterSelector, setShowTransporterSelector] = useState(false);
 
   useEffect(() => {
     // Check URL params for tab
@@ -122,41 +111,6 @@ export default function AcheteurDashboard() {
     }
   };
 
-  const handleSelectTransporter = (orderId: string) => {
-    setSelectedOrderId(orderId);
-    setShowTransporterSelector(true);
-  };
-
-  const handleTransporterAssign = async (transporterId: string | null, transportPrice?: number) => {
-    if (!selectedOrderId) return;
-
-    try {
-      const response = await fetch(`/api/orders/${selectedOrderId}/assign-transporter`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          transporterId,
-          transportPrice,
-          estimatedDeliveryDate: transporterId ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Rafraîchir les commandes
-        fetchMyOrders();
-        alert(data.message || "Transporteur assigné avec succès");
-      } else {
-        const data = await response.json();
-        alert(data.error || "Erreur lors de l'assignation du transporteur");
-      }
-    } catch (error) {
-      alert("Erreur lors de l'assignation du transporteur");
-    }
-  };
-
   const getOrderStatusBadge = (status: string) => {
     const badges = {
       pending: "bg-yellow-100 text-yellow-800",
@@ -217,7 +171,7 @@ export default function AcheteurDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-8">
-          Tableau de bord Transformateur 🏭
+          Tableau de bord Acheteur 🏭
         </h2>
 
         {/* Tabs */}
@@ -225,21 +179,19 @@ export default function AcheteurDashboard() {
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab("overview")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "overview"
-                  ? "border-tomato-600 text-tomato-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "overview"
+                ? "border-tomato-600 text-tomato-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
             >
               🏠 Aperçu
             </button>
             <button
               onClick={() => setActiveTab("orders")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "orders"
-                  ? "border-tomato-600 text-tomato-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "orders"
+                ? "border-tomato-600 text-tomato-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
             >
               📦 Mes commandes ({orderStats.total})
               {orderStats.pending > 0 && (
@@ -291,7 +243,7 @@ export default function AcheteurDashboard() {
                 <div className="text-6xl mb-4">🌳</div>
                 <h3 className="text-xl font-semibold mb-2">Parcourir le catalogue</h3>
                 <p className="text-gray-600">
-                  Parcourez les offres d'hévéa (latex, caoutchouc naturel) disponibles
+                  Parcourez les offres de produits agricoles disponibles
                 </p>
               </Link>
 
@@ -376,7 +328,7 @@ export default function AcheteurDashboard() {
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Parcourez le catalogue</h4>
                       <p className="text-gray-600">
-                        Explorez les offres d'hévéa disponibles et utilisez les filtres pour affiner votre recherche.
+                        Explorez les offres de produits disponibles et utilisez les filtres pour affiner votre recherche.
                       </p>
                     </div>
                   </div>
@@ -400,7 +352,7 @@ export default function AcheteurDashboard() {
                     <div>
                       <h4 className="font-semibold text-lg mb-1">Attendez la confirmation</h4>
                       <p className="text-gray-600">
-                        Le producteur recevra votre commande et vous contactera pour confirmer et organiser la livraison.
+                        L&apos;administrateur validera votre commande et une équipe logistique sera assignée automatiquement.
                       </p>
                     </div>
                   </div>
@@ -438,41 +390,37 @@ export default function AcheteurDashboard() {
                 <span className="text-sm font-medium text-gray-700">Filtrer:</span>
                 <button
                   onClick={() => setOrderFilter("all")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "all"
-                      ? "bg-tomato-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "all"
+                    ? "bg-tomato-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Toutes ({orders.length})
                 </button>
                 <button
                   onClick={() => setOrderFilter("pending")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "pending"
-                      ? "bg-yellow-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "pending"
+                    ? "bg-yellow-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   En attente ({orderStats.pending})
                 </button>
                 <button
                   onClick={() => setOrderFilter("accepted")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "accepted"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "accepted"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Acceptées ({orderStats.accepted})
                 </button>
                 <button
                   onClick={() => setOrderFilter("completed")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "completed"
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "completed"
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Complétées ({orderStats.completed})
                 </button>
@@ -562,68 +510,10 @@ export default function AcheteurDashboard() {
                             <h4 className="text-sm font-semibold text-gray-700 mb-2">Producteur</h4>
                             <div className="text-sm text-gray-600 space-y-1">
                               <p className="font-medium">{order.seller.name}</p>
-                              <p>📧 {order.seller.email}</p>
-                              {order.seller.phone && <p>📱 {order.seller.phone}</p>}
                               {order.seller.location && <p>📍 {order.seller.location}</p>}
                             </div>
                           </div>
                         </div>
-
-                        {/* Transporter info */}
-                        {order.transporter ? (
-                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                                  🚛 Transporteur
-                                </h4>
-                                <div className="text-sm text-gray-600 space-y-1">
-                                  <p className="font-medium">{order.transporter.companyName || order.transporter.name}</p>
-                                  {order.transporter.phone && <p>📱 {order.transporter.phone}</p>}
-                                  {order.transportPrice && (
-                                    <p className="text-tomato-600 font-semibold mt-2">
-                                      Prix transport: {order.transportPrice.toLocaleString()} FCFA
-                                    </p>
-                                  )}
-                                  {order.estimatedDeliveryDate && (
-                                    <p className="text-xs text-gray-500">
-                                      Livraison estimée: {new Date(order.estimatedDeliveryDate).toLocaleDateString("fr-FR")}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                              {(order.status === "pending" || order.status === "accepted") && (
-                                <button
-                                  onClick={() => handleSelectTransporter(order._id)}
-                                  className="text-xs text-blue-600 hover:text-blue-800 underline"
-                                >
-                                  Changer
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          (order.status === "pending" || order.status === "accepted") && (
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                  <p className="text-sm text-gray-700">
-                                    <span className="font-medium">📦 Aucun transporteur sélectionné</span>
-                                  </p>
-                                  <p className="text-xs text-gray-600 mt-1">
-                                    Sélectionnez un transporteur pour faciliter la livraison (optionnel)
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={() => handleSelectTransporter(order._id)}
-                                  className="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm whitespace-nowrap"
-                                >
-                                  🚛 Sélectionner
-                                </button>
-                              </div>
-                            </div>
-                          )
-                        )}
 
                         {/* Buyer note */}
                         {order.buyerNote && (
@@ -672,17 +562,17 @@ export default function AcheteurDashboard() {
                         {/* Status info */}
                         {order.status === "pending" && (
                           <p className="text-xs text-gray-500 mt-3 text-center">
-                            En attente de confirmation du producteur
+                            En attente de validation par l&apos;administrateur
                           </p>
                         )}
                         {order.status === "accepted" && (
                           <p className="text-xs text-green-600 mt-3 text-center">
-                            ✓ Commande acceptée - Le producteur vous contactera pour finaliser
+                            ✓ Commande acceptée et validée. Elle sera expédiée sous peu.
                           </p>
                         )}
                         {order.status === "rejected" && (
                           <p className="text-xs text-red-600 mt-3 text-center">
-                            Cette commande a été rejetée par le producteur
+                            Cette commande a été rejetée.
                           </p>
                         )}
                         {order.status === "completed" && (
@@ -699,18 +589,6 @@ export default function AcheteurDashboard() {
           </div>
         )}
       </main>
-
-      {/* Transporter Selector Modal */}
-      {showTransporterSelector && selectedOrderId && (
-        <TransporterSelector
-          orderId={selectedOrderId}
-          onSelect={handleTransporterAssign}
-          onClose={() => {
-            setShowTransporterSelector(false);
-            setSelectedOrderId(null);
-          }}
-        />
-      )}
     </div>
   );
 }

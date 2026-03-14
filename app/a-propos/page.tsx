@@ -8,7 +8,6 @@ export default function AProposPage() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
               <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
             </Link>
             <Link
@@ -33,9 +32,9 @@ export default function AProposPage() {
             </h2>
             <p className="text-gray-700 leading-relaxed">
               DJENEBA est née d'une vision simple mais puissante : connecter directement
-              les producteurs d'hévéa africains avec les acheteurs professionnels, en éliminant les
+              les producteurs agricoles africains avec les acheteurs professionnels, en éliminant les
               intermédiaires qui réduisent les marges des producteurs et créent des inefficiences
-              dans la chaîne de valeur du caoutchouc naturel.
+              dans la chaîne de valeur agricole.
             </p>
           </section>
 
@@ -91,10 +90,10 @@ export default function AProposPage() {
               Notre Vision
             </h2>
             <p className="text-gray-700 leading-relaxed">
-              Nous nous concentrons sur l'hévéa, source de caoutchouc naturel pour l'Afrique, avec l'ambition de devenir la
-              plateforme de référence pour la commercialisation de l'hévéa en Afrique de l'Ouest. Nous
-              voulons contribuer à la modernisation du secteur de l'hévéa et améliorer
-              les revenus des producteurs tout en facilitant l'accès à du caoutchouc naturel de qualité
+              Nous nous concentrons sur les produits agricoles, richesses de l'Afrique, avec l'ambition de devenir la
+              plateforme de référence pour leur commercialisation en Afrique de l'Ouest. Nous
+              voulons contribuer à la modernisation du secteur agricole et améliorer
+              les revenus des producteurs tout en facilitant l'accès à des produits de qualité
               pour les acheteurs et transformateurs.
             </p>
           </section>

@@ -8,7 +8,6 @@ export default function BlogPage() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
               <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
             </Link>
             <Link
@@ -42,13 +41,13 @@ export default function BlogPage() {
               <div className="text-4xl mb-3">🌱</div>
               <h3 className="font-semibold mb-2">Conseils de culture</h3>
               <p className="text-gray-600 text-sm">
-                Techniques de culture, variétés performantes, gestion des nuisibles pour l'hévéa
+                Techniques de culture, variétés performantes, gestion des nuisibles pour vos cultures
               </p>
             </div>
 
             <div className="bg-tomato-50 rounded-lg p-6">
               <div className="text-4xl mb-3">💼</div>
-              <h3 className="font-semibold mb-2">Commerce de l'hévéa</h3>
+              <h3 className="font-semibold mb-2">Commerce agricole</h3>
               <p className="text-gray-600 text-sm">
                 Prix du marché, normes de qualité, certifications et débouchés
               </p>
@@ -56,7 +55,12 @@ export default function BlogPage() {
 
             <div className="bg-agricultural-50 rounded-lg p-6">
               <div className="text-4xl mb-3">📊</div>
-              <h3 className="font-semibold mb-2">Marché de l'hévéa</h3>
+              <h3 className="font-semibold mb-2">Marché agricole</h3>
+              <p className="text-gray-600 text-sm">
+                Tendances et opportunités pour les producteurs maliens
+              </p>
+            </div>
+          </div>
 
           <div className="mt-8">
             <Link

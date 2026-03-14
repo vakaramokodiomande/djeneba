@@ -132,8 +132,8 @@ node scripts/create-admin.js
 - Rôle: producteur
 - Location: Sikasso, Mali
 
-**Transformateur Test:**
-- Email: transformateur@test.com
+**Acheteur Test:**
+- Email: acheteur@test.com
 - Mot de passe: test123456
 - Rôle: acheteur
 - Location: Bamako, Mali

@@ -3,6 +3,8 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 export interface IListing extends Document {
   _id: string;
   title: string;
+  category: "Fruits" | "Maraîchers et Vivriers" | "Produits de Rente" | "Autre";
+  productName: string;
   description: string;
   price: number; // Prix en FCFA par kg
   quantity: number; // Quantité initiale en kg
@@ -25,6 +27,16 @@ const ListingSchema = new Schema<IListing>(
       required: [true, "Le titre est requis"],
       trim: true,
       maxlength: [100, "Le titre ne peut pas dépasser 100 caractères"],
+    },
+    category: {
+      type: String,
+      required: [true, "La catégorie est requise"],
+      enum: ["Fruits", "Maraîchers et Vivriers", "Produits de Rente", "Autre"],
+    },
+    productName: {
+      type: String,
+      required: [true, "Le nom du produit est requis"],
+      trim: true,
     },
     description: {
       type: String,

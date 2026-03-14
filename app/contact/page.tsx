@@ -8,7 +8,6 @@ export default function ContactPage() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
               <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
             </Link>
             <Link
@@ -197,7 +196,7 @@ export default function ContactPage() {
                 Quels produits sont disponibles ?
               </h3>
               <p className="text-gray-700">
-                Nous sommes spécialisés dans le commerce de l'hévéa (caoutchouc naturel). Nous travaillons avec des producteurs et acheteurs dans toute l'Afrique de l'Ouest.
+                Nous sommes spécialisés dans le commerce de produits agricoles. Nous travaillons avec des producteurs et acheteurs dans toute l'Afrique de l'Ouest.
               </p>
             </div>
           </div>

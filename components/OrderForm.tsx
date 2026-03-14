@@ -21,6 +21,7 @@ export default function OrderForm({
   const router = useRouter();
   const [quantity, setQuantity] = useState<number>(1);
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [requestedDeliveryDelay, setRequestedDeliveryDelay] = useState("");
   const [buyerNote, setBuyerNote] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<string>("cash");
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ export default function OrderForm({
           listingId,
           quantity,
           deliveryAddress: deliveryAddress || undefined,
+          requestedDeliveryDelay: requestedDeliveryDelay || undefined,
           buyerNote: buyerNote || undefined,
           paymentMethod,
         }),
@@ -153,6 +155,20 @@ export default function OrderForm({
           />
         </div>
 
+        {/* Délai de réception souhaité */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Délai de réception souhaité (optionnel)
+          </label>
+          <input
+            type="text"
+            value={requestedDeliveryDelay}
+            onChange={(e) => setRequestedDeliveryDelay(e.target.value)}
+            placeholder="Ex: Sous 48h, La semaine prochaine, Le 15/02..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
+          />
+        </div>
+
         {/* Mode de paiement */}
         <div className="mb-4">
           <label htmlFor="payment-method" className="block text-sm font-medium text-gray-700 mb-2">
@@ -225,8 +241,8 @@ export default function OrderForm({
           {loading
             ? "⏳ Envoi en cours..."
             : availableQuantity === 0
-            ? "🚫 Rupture de stock"
-            : "✓ Confirmer ma commande"}
+              ? "🚫 Rupture de stock"
+              : "✓ Confirmer ma commande"}
         </button>
 
         <div className="mt-3 space-y-1">

@@ -56,7 +56,6 @@ export default function ConnexionPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link href="/" className="flex items-center justify-center space-x-2 mb-6">
-            <img src="/logo.svg" alt="DJENEBA Logo" className="h-14 w-14 object-contain" />
             <h1 className="text-3xl font-bold text-tomato-600">DJENEBA</h1>
           </Link>
           <h2 className="text-center text-3xl font-extrabold text-gray-900">

@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DashboardHeader from "@/components/DashboardHeader";
-import TransporterSelector from "@/components/TransporterSelector";
 
 interface Listing {
   _id: string;
@@ -66,8 +65,6 @@ export default function ProducteurDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [orderFilter, setOrderFilter] = useState<string>("all");
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [showTransporterSelector, setShowTransporterSelector] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -133,49 +130,12 @@ export default function ProducteurDashboard() {
 
         // Refresh listings to show updated quantities
         fetchMyListings();
-
-        alert("Statut de la commande mis à jour avec succès");
       } else {
         const data = await response.json();
         alert(data.error || "Erreur lors de la mise à jour");
       }
     } catch (error) {
       alert("Erreur lors de la mise à jour de la commande");
-    }
-  };
-
-  const handleSelectTransporter = (orderId: string) => {
-    setSelectedOrderId(orderId);
-    setShowTransporterSelector(true);
-  };
-
-  const handleTransporterAssign = async (transporterId: string | null, transportPrice?: number) => {
-    if (!selectedOrderId) return;
-
-    try {
-      const response = await fetch(`/api/orders/${selectedOrderId}/assign-transporter`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          transporterId,
-          transportPrice,
-          estimatedDeliveryDate: transporterId ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        // Rafraîchir les commandes
-        fetchMyOrders();
-        alert(data.message || "Transporteur assigné avec succès");
-      } else {
-        const data = await response.json();
-        alert(data.error || "Erreur lors de l'assignation du transporteur");
-      }
-    } catch (error) {
-      alert("Erreur lors de l'assignation du transporteur");
     }
   };
 
@@ -281,7 +241,7 @@ export default function ProducteurDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-900">
-            Tableau de bord Producteur d'Hévéa 🌳
+            Tableau de bord Producteur Agricole 🌳
           </h2>
           <Link
             href="/dashboard/producteur/nouvelle-annonce"
@@ -296,21 +256,19 @@ export default function ProducteurDashboard() {
           <nav className="-mb-px flex space-x-8">
             <button
               onClick={() => setActiveTab("listings")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "listings"
-                  ? "border-tomato-600 text-tomato-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "listings"
+                ? "border-tomato-600 text-tomato-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
             >
               📦 Mes annonces ({listings.length})
             </button>
             <button
               onClick={() => setActiveTab("orders")}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "orders"
-                  ? "border-tomato-600 text-tomato-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "orders"
+                ? "border-tomato-600 text-tomato-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
             >
               🛒 Commandes ({orderStats.total})
               {orderStats.pending > 0 && (
@@ -484,41 +442,37 @@ export default function ProducteurDashboard() {
                 <span className="text-sm font-medium text-gray-700">Filtrer:</span>
                 <button
                   onClick={() => setOrderFilter("all")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "all"
-                      ? "bg-tomato-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "all"
+                    ? "bg-tomato-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Toutes ({orders.length})
                 </button>
                 <button
                   onClick={() => setOrderFilter("pending")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "pending"
-                      ? "bg-yellow-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "pending"
+                    ? "bg-yellow-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   En attente ({orderStats.pending})
                 </button>
                 <button
                   onClick={() => setOrderFilter("accepted")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "accepted"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "accepted"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Acceptées ({orderStats.accepted})
                 </button>
                 <button
                   onClick={() => setOrderFilter("completed")}
-                  className={`px-3 py-1 rounded text-sm ${
-                    orderFilter === "completed"
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded text-sm ${orderFilter === "completed"
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   Complétées ({orderStats.completed})
                 </button>
@@ -577,8 +531,6 @@ export default function ProducteurDashboard() {
                             <h4 className="text-sm font-semibold text-gray-700 mb-2">Acheteur</h4>
                             <div className="text-sm text-gray-600 space-y-1">
                               <p className="font-medium">{order.buyer.name}</p>
-                              <p>📧 {order.buyer.email}</p>
-                              {order.buyer.phone && <p>📱 {order.buyer.phone}</p>}
                               {order.buyer.location && <p>📍 {order.buyer.location}</p>}
                               {order.deliveryAddress && (
                                 <p className="mt-2">
@@ -625,44 +577,9 @@ export default function ProducteurDashboard() {
                           </div>
                         )}
 
-                        {/* Actions */}
                         {order.status === "pending" && (
-                          <div className="flex space-x-3 mt-4">
-                            <button
-                              onClick={() => {
-                                const note = prompt("Note optionnelle pour l'acheteur:");
-                                handleOrderStatusUpdate(order._id, "accepted", note || undefined);
-                              }}
-                              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition font-semibold"
-                            >
-                              ✓ Accepter la commande
-                            </button>
-                            <button
-                              onClick={() => {
-                                if (confirm("Êtes-vous sûr de vouloir rejeter cette commande ?")) {
-                                  const reason = prompt("Raison du rejet (optionnel):");
-                                  handleOrderStatusUpdate(order._id, "rejected", reason || undefined);
-                                }
-                              }}
-                              className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition font-semibold"
-                            >
-                              ✗ Rejeter
-                            </button>
-                          </div>
-                        )}
-
-                        {order.status === "accepted" && (
-                          <div className="mt-4">
-                            <button
-                              onClick={() => {
-                                if (confirm("Confirmer que cette commande est complétée et livrée ?")) {
-                                  handleOrderStatusUpdate(order._id, "completed");
-                                }
-                              }}
-                              className="w-full bg-tomato-600 text-white px-4 py-2 rounded-lg hover:bg-tomato-700 transition font-semibold"
-                            >
-                              ✓ Marquer comme complétée
-                            </button>
+                          <div className="mt-4 text-center text-sm text-gray-500">
+                            Cette commande est en attente de validation par l&apos;administrateur
                           </div>
                         )}
 
@@ -670,7 +587,7 @@ export default function ProducteurDashboard() {
                           <div className="mt-4 text-center text-sm text-gray-500">
                             {order.status === "completed" && "Cette commande a été complétée"}
                             {order.status === "rejected" && "Cette commande a été rejetée"}
-                            {order.status === "cancelled" && "Cette commande a été annulée par l'acheteur"}
+                            {order.status === "cancelled" && "Cette commande a été annulée par l&apos;acheteur"}
                           </div>
                         )}
                       </div>

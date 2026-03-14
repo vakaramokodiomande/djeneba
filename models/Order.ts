@@ -5,9 +5,9 @@ export interface IOrder extends Document {
   listing: mongoose.Types.ObjectId | string;
   buyer: mongoose.Types.ObjectId | string;
   seller: mongoose.Types.ObjectId | string;
-  transporter?: mongoose.Types.ObjectId | string; // Transporteur sélectionné (optionnel)
-  transportPrice?: number; // Prix du transport (optionnel)
-  estimatedDeliveryDate?: Date; // Date de livraison estimée par le transporteur
+  logisticsPartner?: string; // Partenaire logistique externe assigné par l'admin
+  logisticsStatus?: "pending" | "picked_up" | "in_transit" | "delivered";
+  proofOfDelivery?: string; // Note ou lien de la preuve de livraison
   quantity: number; // Quantité commandée en kg
   pricePerUnit: number; // Prix au moment de la commande (FCFA/kg)
   totalAmount: number; // Prix total (quantity * pricePerUnit)
@@ -15,6 +15,7 @@ export interface IOrder extends Document {
   paymentStatus: "pending" | "paid" | "refunded";
   paymentMethod?: "cash" | "wave" | "orange_money" | "moov_money";
   deliveryAddress?: string;
+  requestedDeliveryDelay?: string; // Délai souhaité par l'acheteur
   buyerNote?: string; // Message/demande de l'acheteur
   sellerNote?: string; // Réponse/note du producteur
   createdAt: Date;
@@ -38,16 +39,18 @@ const OrderSchema = new Schema<IOrder>(
       ref: "User",
       required: [true, "Le vendeur est requis"],
     },
-    transporter: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    logisticsPartner: {
+      type: String,
+      trim: true,
     },
-    transportPrice: {
-      type: Number,
-      min: [0, "Le prix du transport doit être positif"],
+    logisticsStatus: {
+      type: String,
+      enum: ["pending", "picked_up", "in_transit", "delivered"],
+      default: "pending",
     },
-    estimatedDeliveryDate: {
-      type: Date,
+    proofOfDelivery: {
+      type: String,
+      trim: true,
     },
     quantity: {
       type: Number,
@@ -79,6 +82,10 @@ const OrderSchema = new Schema<IOrder>(
       enum: ["cash", "wave", "orange_money", "moov_money"],
     },
     deliveryAddress: {
+      type: String,
+      trim: true,
+    },
+    requestedDeliveryDelay: {
       type: String,
       trim: true,
     },

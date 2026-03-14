@@ -10,6 +10,7 @@ const orderSchema = z.object({
   listingId: z.string().min(1, "L'ID de l'annonce est requis"),
   quantity: z.number().positive("La quantité doit être positive"),
   deliveryAddress: z.string().optional(),
+  requestedDeliveryDelay: z.string().optional(),
   buyerNote: z.string().max(500, "La note ne peut pas dépasser 500 caractères").optional(),
   paymentMethod: z.enum(["cash", "wave", "orange_money", "moov_money"]).optional(),
 });
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
       pricePerUnit: listing.price,
       totalAmount,
       deliveryAddress: validatedData.deliveryAddress,
+      requestedDeliveryDelay: validatedData.requestedDeliveryDelay,
       buyerNote: validatedData.buyerNote,
       paymentMethod: validatedData.paymentMethod,
       status: "pending",
@@ -159,8 +161,8 @@ export async function GET(request: Request) {
       query.buyer = session.user.id;
     } else if (type === "sales" || session.user.role === "producteur") {
       query.seller = session.user.id;
-    } else if (type === "transporter" || session.user.role === "transporteur") {
-      query.transporter = session.user.id;
+    } else if (session.user.role === "admin") {
+      // Admin sees all, no filter needed unless specified
     }
 
     // Filtrer par statut si fourni
@@ -172,7 +174,6 @@ export async function GET(request: Request) {
       .populate("buyer", "name email phone location")
       .populate("seller", "name email phone location")
       .populate("listing", "title images price unit quantity")
-      .populate("transporter", "name companyName phone")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ orders });

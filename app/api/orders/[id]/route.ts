@@ -38,8 +38,8 @@ export async function GET(
 
     // Vérifier que l'utilisateur est l'acheteur ou le vendeur
     if (
-      order.buyer._id.toString() !== session.user.id &&
-      order.seller._id.toString() !== session.user.id
+      (order.buyer as any)._id?.toString() !== session.user.id &&
+      (order.seller as any)._id?.toString() !== session.user.id
     ) {
       return NextResponse.json(
         { error: "Non autorisé" },
@@ -76,7 +76,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { status: newStatus, sellerNote, paymentStatus } = body;
+    const { status: newStatus, sellerNote, paymentStatus, logisticsPartner, logisticsStatus, proofOfDelivery } = body;
 
     const order = await Order.findById(id).populate("listing");
 
@@ -90,16 +90,17 @@ export async function PATCH(
     // Vérifier les permissions
     const isSeller = order.seller.toString() === session.user.id;
     const isBuyer = order.buyer.toString() === session.user.id;
+    const isAdmin = session.user.role === "admin";
 
-    if (!isSeller && !isBuyer && session.user.role !== "admin") {
+    if (!isSeller && !isBuyer && !isAdmin) {
       return NextResponse.json(
         { error: "Non autorisé" },
         { status: 403 }
       );
     }
 
-    // Seul le vendeur peut accepter/rejeter
-    if (newStatus && isSeller) {
+    // Seul l'admin peut accepter/rejeter/compléter
+    if (newStatus && isAdmin) {
       if (newStatus === "accepted") {
         // Accepter la commande (la quantité reste réservée)
         order.status = "accepted";
@@ -146,8 +147,15 @@ export async function PATCH(
       order.sellerNote = sellerNote;
     }
 
-    // Mise à jour du statut de paiement (vendeur ou admin uniquement)
-    if (paymentStatus && (isSeller || session.user.role === "admin")) {
+    // Mise à jour de la logistique par l'admin
+    if (isAdmin) {
+      if (logisticsPartner !== undefined) order.logisticsPartner = logisticsPartner;
+      if (logisticsStatus !== undefined) order.logisticsStatus = logisticsStatus;
+      if (proofOfDelivery !== undefined) order.proofOfDelivery = proofOfDelivery;
+    }
+
+    // Mise à jour du statut de paiement (admin uniquement ou vendeur pour cash)
+    if (paymentStatus && (isSeller || isAdmin)) {
       // Idempotence: si le statut est déjà le même, ne rien faire
       if (order.paymentStatus !== paymentStatus) {
         order.paymentStatus = paymentStatus;

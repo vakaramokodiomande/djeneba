@@ -14,12 +14,21 @@ export default function NouvelleAnnoncePage() {
     quantity: "",
     location: "",
   });
+  const [category, setCategory] = useState<string>("");
+  const [productName, setProductName] = useState<string>("");
+  const [customProductName, setCustomProductName] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const CATEGORIES = {
+    "Fruits": ["Banane", "Mangue", "Papaye", "Ananas", "Orange", "Autre"],
+    "Maraîchers et Vivriers": ["Carotte", "Chou", "Aubergine", "Piment", "Gombo", "Manioc", "Igname", "Maïs", "Riz", "Autre"],
+    "Produits de Rente": ["Cacao", "Cajou", "Hévéa", "Coton", "Palmier à huile", "Autre"],
+  };
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,
@@ -37,6 +46,18 @@ export default function NouvelleAnnoncePage() {
       return;
     }
 
+    if (!category || !productName) {
+      setError("Veuillez sélectionner une catégorie et un produit");
+      return;
+    }
+
+    const finalProductName = productName === "Autre" ? customProductName : productName;
+
+    if (!finalProductName) {
+      setError("Veuillez préciser le nom du produit");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -49,6 +70,8 @@ export default function NouvelleAnnoncePage() {
           ...formData,
           price: Number(formData.price),
           quantity: Number(formData.quantity),
+          category,
+          productName: finalProductName,
           images: images,
         }),
       });
@@ -75,10 +98,10 @@ export default function NouvelleAnnoncePage() {
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <h2 className="text-3xl font-bold text-gray-900">
-            Nouvelle annonce d'hévéa 🌳
+            Nouvelle annonce 📦
           </h2>
           <p className="text-gray-600 mt-2">
-            Remplissez le formulaire ci-dessous pour publier votre offre d'hévéa (ex: caoutchouc RSS, latex, concentré, précisez le grade et le conditionnement)
+            Remplissez le formulaire ci-dessous pour publier votre offre.
           </p>
         </div>
 
@@ -89,6 +112,64 @@ export default function NouvelleAnnoncePage() {
           {error && (
             <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
+            </div>
+          )}
+
+          {/* Catégories en cascade */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                Catégorie *
+              </label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setProductName("");
+                  setCustomProductName("");
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
+              >
+                <option value="">Sélectionner une catégorie</option>
+                {Object.keys(CATEGORIES).map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="productName" className="block text-sm font-medium text-gray-700 mb-1">
+                Produit *
+              </label>
+              <select
+                id="productName"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                disabled={!category}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500 disabled:bg-gray-100"
+              >
+                <option value="">Sélectionner un produit</option>
+                {category && (CATEGORIES as any)[category].map((prod: string) => (
+                  <option key={prod} value={prod}>{prod}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {productName === "Autre" && (
+            <div>
+              <label htmlFor="customProductName" className="block text-sm font-medium text-gray-700 mb-1">
+                Précisez le nom du produit *
+              </label>
+              <input
+                type="text"
+                id="customProductName"
+                value={customProductName}
+                onChange={(e) => setCustomProductName(e.target.value)}
+                placeholder="Ex: Passion, Avocat..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
+              />
             </div>
           )}
 
@@ -103,7 +184,7 @@ export default function NouvelleAnnoncePage() {
               required
               value={formData.title}
               onChange={handleChange}
-              placeholder="Ex: Caoutchouc naturel RSS1 - Lot 2026"
+              placeholder="Ex: Banane douce de qualité supérieure"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
             />
           </div>
@@ -119,7 +200,7 @@ export default function NouvelleAnnoncePage() {
               rows={4}
               value={formData.description}
               onChange={handleChange}
-              placeholder="Décrivez votre hévéa: grade, traitement (latex, RSS), conditionnement, stockage..."
+              placeholder="Décrivez votre produit : variété, qualité, conditionnement, etc."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
             />
           </div>
@@ -127,7 +208,7 @@ export default function NouvelleAnnoncePage() {
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                Prix (FCFA/tonne) *
+                Prix (FCFA/unité de vente) *
               </label>
               <input
                 type="number"
@@ -137,14 +218,14 @@ export default function NouvelleAnnoncePage() {
                 min="0"
                 value={formData.price}
                 onChange={handleChange}
-                placeholder="450000"
+                placeholder="Ex: 500"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
               />
             </div>
 
             <div>
               <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                Quantité disponible (tonnes) *
+                Quantité disponible *
               </label>
               <input
                 type="number"
@@ -155,7 +236,7 @@ export default function NouvelleAnnoncePage() {
                 step="0.1"
                 value={formData.quantity}
                 onChange={handleChange}
-                placeholder="15"
+                placeholder="Ex: 100"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-tomato-500 focus:border-tomato-500"
               />
             </div>

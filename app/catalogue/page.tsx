@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import DashboardHeader from "@/components/DashboardHeader";
 
 interface Listing {
   _id: string;
@@ -23,6 +25,7 @@ interface Listing {
 
 export default function CataloguePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,52 +100,38 @@ export default function CataloguePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="DJENEBA Logo" className="h-12 w-12 object-contain" />
-              <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/connexion"
-                className="text-gray-700 hover:text-tomato-600 transition"
-              >
-                Connexion
+      {/* Header - Use DashboardHeader if logged in, otherwise show public header */}
+      {session ? (
+        <DashboardHeader />
+      ) : (
+        <header className="bg-white shadow-sm">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2">
+                <h1 className="text-2xl font-bold text-tomato-600">DJENEBA</h1>
               </Link>
-              <Link
-                href="/inscription"
-                className="bg-tomato-600 text-white px-6 py-2 rounded-lg hover:bg-tomato-700 transition"
-              >
-                Inscription
-              </Link>
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/connexion"
+                  className="text-gray-700 hover:text-tomato-600 transition"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/inscription"
+                  className="bg-tomato-600 text-white px-6 py-2 rounded-lg hover:bg-tomato-700 transition"
+                >
+                  Inscription
+                </Link>
+              </div>
             </div>
-          </div>
-        </nav>
-      </header>
-
-      {/* Bannière informative */}
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-b-2 border-green-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-2xl">✓</span>
-            <div className="text-center">
-              <p className="text-green-900 font-semibold">
-                Achetez directement sans intermédiaire
-              </p>
-              <p className="text-sm text-green-700">
-                Commandez en ligne • Le producteur vous contactera • Paiement à la livraison
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+          </nav>
+        </header>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-6">
-          Catalogue d'hévéa 🌳
+          Catalogue des produits 🌳
         </h2>
 
         {/* Search Bar */}
@@ -157,7 +146,7 @@ export default function CataloguePage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher de l'hévéa, producteurs, localités..."
+              placeholder="Rechercher des produits, producteurs, localités..."
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tomato-500 focus:border-transparent"
             />
             {searchQuery && (
